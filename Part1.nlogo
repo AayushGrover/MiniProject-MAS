@@ -1,15 +1,12 @@
 globals [
   ;;score of all turtles
-  total-score
-  in-line?
+  h-line?
+  v-line?
 ]
 
 turtles-own [
-  score
-  partner-left?           ;;has left-partner?
-  partner-right?          ;;has right-partner?
-  partner-left
-  partner-right
+  score     ;;is 0 if not in a line, 1 if in a h-line & 2 if in a v-line (not to be confused with payoff)
+  partner
 ]
 
 
@@ -20,7 +17,8 @@ turtles-own [
 to setup
   clear-all
   setup-turtles ;;setup the turtles and distribute them randomly
-  set in-line? false
+  set v-line? false
+  set h-line? false
   reset-ticks
 end
 
@@ -35,18 +33,15 @@ end
 
 ;;create the appropriate number of turtles playing each strategy
 to make-turtles
-  create-turtles 10 [ set color red]
-  create-turtles 10 [ set color blue]
+  create-turtles 50 [ set color red]
+  create-turtles 50 [ set color blue]
 end
 
 ;;set the variables that all turtles share
 to setup-common-variables
   ask turtles [
     set score 0
-    set partner-left? false ;;no left partner
-    set partner-right? false ;;no right partner
-    set partner-left nobody
-    set partner-right nobody
+    set partner nobody
     setxy random-xcor random-ycor
   ]
 end
@@ -57,11 +52,21 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
 to go
-  ask turtles [ partner-up ]                        ;;have turtles try to find a partner
-  ;;let partnered-turtles turtles with [ partnered? ]
-  ;;ask partnered-turtles [ select-action ]           ;;all partnered turtles select action
-  ;;ask partnered-turtles [ play-a-round ]
-  ;;do-scoring
+  let moving-turtles turtles with [ score = 0 ]
+  ifelse (v-line? and h-line?) [
+    ask moving-turtles [ form-line ]
+  ][
+    ifelse (v-line?) [
+      ask moving-turtles [ form-h-line ]
+    ][
+      ifelse (h-line?) [
+        ask moving-turtles [ form-v-line ]
+      ][
+        ask moving-turtles [ form-v-line ]
+        ask moving-turtles [ form-h-line ]
+      ]
+    ]
+  ]
   tick
 end
 
@@ -70,191 +75,83 @@ end
 ;;caused the turtle executing partner-up to be partnered,
 ;;a check is needed to make sure the calling turtle isn't partnered.
 
-to partner-up ;;turtle procedure
-  if (not partner-left? or not partner-right?) [              ;;make sure not in line
+to form-line ;;turtle procedure
     set heading (45 * random 8)
     ifelse any? turtles-on patch-ahead 1
     [ ]
     [ fd 1 ]     ;;move around randomly
-    set partner-left one-of (turtles-at -1 0) with [ not partner-right? ]
-    if partner-left != nobody [              ;;if successful grabbing a partner, partner up
-      set partner-left? true
-      set heading 270                   ;;face partner
-      ask partner-left [
-        set partner-right? true
-        set partner-right myself
+
+    set partner one-of (turtles-at -1 0) with [ score = 1 ]
+    ifelse partner != nobody [
+      set score 1
+    ][
+      set partner one-of (turtles-at 1 0) with [ score = 1 ]
+      ifelse partner != nobody [
+        set score 1
+      ][
+        set partner one-of (turtles-at 0 1) with [ score = 2 ]
+        ifelse partner != nobody [
+          set score 2
+        ][
+          set partner one-of (turtles-at 0 -1) with [ score = 2 ]
+          if partner != nobody [
+            set score 2
+          ]
+        ]
       ]
     ]
-    set partner-right one-of (turtles-at 1 0) with [ not partner-left? ]
-    if partner-right != nobody [              ;;if successful grabbing a partner, partner up
-      set partner-right? true
-      set heading 270                   ;;face partner
-      ask partner-right [
-        set partner-left? true
-        set partner-left myself
+end
+
+to form-v-line ;;turtle procedure
+    set heading (45 * random 8)
+    ifelse any? turtles-on patch-ahead 1
+    [ ]
+    [ fd 1 ]     ;;move around randomly
+
+    set partner one-of (turtles-at 0 1)
+    ifelse partner != nobody [
+      set score 2
+      ask partner [
+        set score 2
+      ]
+      set v-line? true
+    ][
+      set partner one-of (turtles-at 0 -1)
+      if partner != nobody [
+        set score 2
+        ask partner [
+          set score 2
+        ]
+        set v-line? true
       ]
     ]
-  ]
 end
 
-;;choose an action based upon the strategy being played
-to select-action ;;turtle procedure
-  if strategy = "random" [ act-randomly ]
-  if strategy = "cooperate" [ cooperate ]
-  if strategy = "defect" [ defect ]
-  if strategy = "tit-for-tat" [ tit-for-tat ]
-  if strategy = "unforgiving" [ unforgiving ]
-  if strategy = "unknown" [ unknown ]
-end
+to form-h-line ;;turtle procedure
+    set heading (45 * random 8)
+    ifelse any? turtles-on patch-ahead 1
+    [ ]
+    [ fd 1 ]     ;;move around randomly
 
-to play-a-round ;;turtle procedure
-  get-payoff     ;;calculate the payoff for this round
-  update-history ;;store the results for next time
-end
-
-;;calculate the payoff for this round and
-;;display a label with that payoff.
-to get-payoff
-  set partner-defected? [defect-now?] of partner
-  ifelse partner-defected? [
-    ifelse defect-now? [
-      set score (score + 1) set label 1
-    ] [
-      set score (score + 0) set label 0
+    set partner one-of (turtles-at -1 0)
+    ifelse partner != nobody [
+      set score 1
+      ask partner [
+        set score 1
+      ]
+      set h-line? true
+    ][
+      set partner one-of (turtles-at 1 0)
+      if partner != nobody [
+        set score 1
+        ask partner [
+          set score 1
+        ]
+        set h-line? true
+      ]
     ]
-  ] [
-    ifelse defect-now? [
-      set score (score + 5) set label 5
-    ] [
-      set score (score + 3) set label 3
-    ]
-  ]
 end
 
-;;update PARTNER-HISTORY based upon the strategy being played
-to update-history
-  if strategy = "random" [ act-randomly-history-update ]
-  if strategy = "cooperate" [ cooperate-history-update ]
-  if strategy = "defect" [ defect-history-update ]
-  if strategy = "tit-for-tat" [ tit-for-tat-history-update ]
-  if strategy = "unforgiving" [ unforgiving-history-update ]
-  if strategy = "unknown" [ unknown-history-update ]
-end
-
-
-;;;;;;;;;;;;;;;;
-;;;Strategies;;;
-;;;;;;;;;;;;;;;;
-
-;;All the strategies are described in the Info tab.
-
-to act-randomly
-  set num-random-games num-random-games + 1
-  ifelse (random-float 1.0 < 0.5) [
-    set defect-now? false
-  ] [
-    set defect-now? true
-  ]
-end
-
-to act-randomly-history-update
-;;uses no history- this is just for similarity with the other strategies
-end
-
-to cooperate
-  set num-cooperate-games num-cooperate-games + 1
-  set defect-now? false
-end
-
-to cooperate-history-update
-;;uses no history- this is just for similarity with the other strategies
-end
-
-to defect
-  set num-defect-games num-defect-games + 1
-  set defect-now? true
-end
-
-to defect-history-update
-;;uses no history- this is just for similarity with the other strategies
-end
-
-to tit-for-tat
-  set num-tit-for-tat-games num-tit-for-tat-games + 1
-  set partner-defected? item ([who] of partner) partner-history
-  ifelse (partner-defected?) [
-    set defect-now? true
-  ] [
-    set defect-now? false
-  ]
-end
-
-to tit-for-tat-history-update
-  set partner-history
-    (replace-item ([who] of partner) partner-history partner-defected?)
-end
-
-to unforgiving
-  set num-unforgiving-games num-unforgiving-games + 1
-  set partner-defected? item ([who] of partner) partner-history
-  ifelse (partner-defected?)
-    [set defect-now? true]
-    [set defect-now? false]
-end
-
-to unforgiving-history-update
-  if partner-defected? [
-    set partner-history
-      (replace-item ([who] of partner) partner-history partner-defected?)
-  ]
-end
-
-;;defaults to tit-for-tat
-;;can you do better?
-to unknown
-  set num-unknown-games num-unknown-games + 1
-  set partner-defected? item ([who] of partner) partner-history
-  ifelse (partner-defected?) [
-    set defect-now? true
-  ] [
-    set defect-now? false
-  ]
-end
-
-;;defaults to tit-for-tat-history-update
-;;can you do better?
-to unknown-history-update
-  set partner-history
-    (replace-item ([who] of partner) partner-history partner-defected?)
-end
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;Plotting Procedures;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;calculate the total scores of each strategy
-to do-scoring
-  set random-score  (calc-score "random" num-random)
-  set cooperate-score  (calc-score "cooperate" num-cooperate)
-  set defect-score  (calc-score "defect" num-defect)
-  set tit-for-tat-score  (calc-score "tit-for-tat" num-tit-for-tat)
-  set unforgiving-score  (calc-score "unforgiving" num-unforgiving)
-  set unknown-score  (calc-score "unknown" num-unknown)
-end
-
-;; returns the total score for a strategy if any turtles exist that are playing it
-to-report calc-score [strategy-type num-with-strategy]
-  ifelse num-with-strategy > 0 [
-    report (sum [ score ] of (turtles with [ strategy = strategy-type ]))
-  ] [
-    report 0
-  ]
-end
-
-
-; Copyright 2002 Uri Wilensky.
-; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
