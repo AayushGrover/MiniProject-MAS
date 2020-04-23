@@ -6,15 +6,7 @@ globals [
 
 turtles-own [
   score     ;;is 0 if not in a line, 1 if in a h-line & 2 if in a v-line (not to be confused with payoff)
-  partner1
-  partner2
-  partner3
-  partner4
-  partner5
-  partner6
-  partner7
-  partner8
-  color-t
+  partner
 
 ]
 
@@ -42,22 +34,15 @@ end
 
 ;;create the appropriate number of turtles playing each strategy
 to make-turtles
-  create-turtles 10 [ set color red set color-t "red"]
-  create-turtles 10 [ set color blue set color-t "blue"]
+  create-turtles 10 [ set color red ]
+  create-turtles 10 [ set color blue ]
 end
 
 ;;set the variables that all turtles share
 to setup-common-variables
   ask turtles [
     set score 0
-    set partner1 nobody
-    set partner2 nobody
-    set partner3 nobody
-    set partner4 nobody
-    set partner5 nobody
-    set partner6 nobody
-    set partner7 nobody
-    set partner8 nobody
+    set partner nobody
     setxy random-xcor random-ycor
   ]
 end
@@ -99,56 +84,29 @@ to form-line ;;turtle procedure
     [ fd 1 ]     ;;move around randomly
 
 
-    ifelse (color-t = "red") [
-    set partner1 one-of (turtles-at -1 0) with [ score = 1 and color-t = "red" ]
-    ifelse partner1 != nobody [
+    set partner one-of (turtles-at -1 0) with [ score = 1 ]
+    ifelse partner != nobody [
       set heading 90
       set score 1
     ][
-      set partner2 one-of (turtles-at 1 0) with [ score = 1 and color-t = "red" ]
-      ifelse partner2 != nobody [
+      set partner one-of (turtles-at 1 0) with [ score = 1 ]
+      ifelse partner != nobody [
         set heading 90
         set score 1
       ]
    [
-   set partner3 one-of (turtles-at 0 1) with [ score = 2 and color-t = "red" ]
-        ifelse partner3 != nobody [
+   set partner one-of (turtles-at 0 1) with [ score = 2 ]
+        ifelse partner != nobody [
           set heading 0
           set score 2
         ][
-          set partner4 one-of (turtles-at 0 -1) with [ score = 2 and color-t = "red" ]
-          if partner4 != nobody [
+          set partner one-of (turtles-at 0 -1) with [ score = 2 ]
+          if partner != nobody [
             set heading 0
             set score 2
           ]
         ]
       ]
-  ]
-  ][
-    set partner1 one-of (turtles-at -1 0) with [ score = 1 and color-t = "blue" ]
-    ifelse partner1 != nobody [
-      set heading 90
-      set score 1
-    ][
-      set partner2 one-of (turtles-at 1 0) with [ score = 1 and color-t = "blue" ]
-      ifelse partner2 != nobody [
-        set heading 90
-        set score 1
-      ]
-   [
-   set partner3 one-of (turtles-at 0 1) with [ score = 2 and color-t = "blue" ]
-        ifelse partner3 != nobody [
-          set heading 0
-          set score 2
-        ][
-          set partner4 one-of (turtles-at 0 -1) with [ score = 2 and color-t = "blue" ]
-          if partner4 != nobody [
-            set heading 0
-            set score 2
-          ]
-        ]
-      ]
-  ]
   ]
 end
 
@@ -160,50 +118,26 @@ to form-v-line ;;turtle procedure
     [ ]
     [ fd 1 ]     ;;move around randomly
 
-    ifelse (color-t = "blue") [
-    set partner5 one-of (turtles-at 0 1) with [color-t = "blue"]
-    ifelse partner5 != nobody [
+    set partner one-of (turtles-at 0 1)
+    ifelse partner != nobody [
       set heading 0
       set score 2
-      ask partner5 [
+      ask partner [
         set heading 0
         set score 2
       ]
       set v-line? true
     ][
-      set partner6 one-of (turtles-at 0 -1) with [color-t = "blue"]
-      if partner6 != nobody [
+      set partner one-of (turtles-at 0 -1)
+      if partner != nobody [
         set heading 0
         set score 2
-        ask partner6 [
+        ask partner [
           set heading 0
           set score 2
         ]
         set v-line? true
       ]
-    ]
-    ][
-      set partner5 one-of (turtles-at 0 1) with [color-t = "red"]
-    ifelse partner5 != nobody [
-      set heading 0
-      set score 2
-      ask partner5 [
-        set heading 0
-        set score 2
-      ]
-      set v-line? true
-    ][
-      set partner6 one-of (turtles-at 0 -1) with [color-t = "red"]
-      if partner6 != nobody [
-        set heading 0
-        set score 2
-        ask partner6 [
-          set heading 0
-          set score 2
-        ]
-        set v-line? true
-      ]
-    ]
     ]
     ]
 end
@@ -216,51 +150,28 @@ to form-h-line ;;turtle procedure
     [ ]
     [ fd 1 ]     ;;move around randomly
 
-    ifelse (color-t = "blue")[
-      set partner7 one-of (turtles-at -1 0) with [color-t = "blue"]
-    ifelse partner7 != nobody [
+      set partner one-of (turtles-at -1 0)
+    ifelse partner != nobody [
       set score 1
       set heading 90
-      ask partner7 [
+      ask partner [
         set heading 90
         set score 1
       ]
       set h-line? true
     ][
-      set partner8 one-of (turtles-at 1 0) with [color-t = "blue"]
-      if partner8 != nobody [
+      set partner one-of (turtles-at 1 0)
+      if partner != nobody [
         set heading 90
         set score 1
-        ask partner8 [
+        ask partner [
           set heading 90
           set score 1
         ]
         set h-line? true
       ]
+    ]
   ]
-    ][
-    set partner7 one-of (turtles-at -1 0) with [color-t = "red"]
-    ifelse partner7 != nobody [
-      set score 1
-      set heading 90
-      ask partner7 [
-        set heading 90
-        set score 1
-      ]
-      set h-line? true
-    ][
-      set partner8 one-of (turtles-at 1 0) with [color-t = "red"]
-      if partner8 != nobody [
-        set heading 90
-        set score 1
-        ask partner8 [
-          set heading 90
-          set score 1
-        ]
-        set h-line? true
-      ]
-  ]
-  ]]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
