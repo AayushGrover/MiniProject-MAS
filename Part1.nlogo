@@ -33,8 +33,8 @@ end
 
 ;;create the appropriate number of turtles playing each strategy
 to make-turtles
-  create-turtles 50 [ set color red]
-  create-turtles 50 [ set color blue]
+  create-turtles 10 [ set color red]
+  create-turtles 10 [ set color blue]
 end
 
 ;;set the variables that all turtles share
@@ -83,18 +83,22 @@ to form-line ;;turtle procedure
 
     set partner one-of (turtles-at -1 0) with [ score = 1 ]
     ifelse partner != nobody [
+      set heading 90
       set score 1
     ][
       set partner one-of (turtles-at 1 0) with [ score = 1 ]
       ifelse partner != nobody [
+        set heading 90
         set score 1
       ][
         set partner one-of (turtles-at 0 1) with [ score = 2 ]
         ifelse partner != nobody [
+          set heading 0
           set score 2
         ][
           set partner one-of (turtles-at 0 -1) with [ score = 2 ]
           if partner != nobody [
+            set heading 0
             set score 2
           ]
         ]
@@ -103,6 +107,7 @@ to form-line ;;turtle procedure
 end
 
 to form-v-line ;;turtle procedure
+    if (not v-line?) [
     set heading (45 * random 8)
     ifelse any? turtles-on patch-ahead 1
     [ ]
@@ -110,24 +115,29 @@ to form-v-line ;;turtle procedure
 
     set partner one-of (turtles-at 0 1)
     ifelse partner != nobody [
+      set heading 0
       set score 2
       ask partner [
+        set heading 0
         set score 2
       ]
       set v-line? true
     ][
       set partner one-of (turtles-at 0 -1)
       if partner != nobody [
+        set heading 0
         set score 2
         ask partner [
+          set heading 0
           set score 2
         ]
         set v-line? true
       ]
-    ]
+  ]]
 end
 
 to form-h-line ;;turtle procedure
+    if (not h-line?) [
     set heading (45 * random 8)
     ifelse any? turtles-on patch-ahead 1
     [ ]
@@ -136,22 +146,25 @@ to form-h-line ;;turtle procedure
     set partner one-of (turtles-at -1 0)
     ifelse partner != nobody [
       set score 1
+      set heading 90
       ask partner [
+        set heading 90
         set score 1
       ]
       set h-line? true
     ][
       set partner one-of (turtles-at 1 0)
       if partner != nobody [
+        set heading 90
         set score 1
         ask partner [
+          set heading 90
           set score 1
         ]
         set h-line? true
       ]
-    ]
+  ]]
 end
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
