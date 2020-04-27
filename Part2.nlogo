@@ -1,7 +1,9 @@
 globals [
   ;;score of all turtles
-  h-line?
-  v-line?
+  blue-h-line?
+  red-h-line?
+  blue-v-line?
+  red-v-line?
   two-lines?
 ]
 
@@ -20,8 +22,10 @@ turtles-own [
 to setup
   clear-all
   setup-turtles ;;setup the turtles and distribute them randomly
-  set v-line? false
-  set h-line? false
+  set red-v-line? false
+  set red-h-line? false
+  set blue-v-line? false
+  set blue-h-line? false
   set two-lines? false
   reset-ticks
 end
@@ -57,7 +61,7 @@ end
 
 to go
   let moving-turtles turtles with [ score = 0 ]
-  ifelse (v-line? or h-line?) [
+  ifelse (red-v-line? or red-h-line? or blue-v-line? or blue-h-line?) [
       ask moving-turtles [ form-line ]
   ][
     ifelse (random-float 1 < 0.5) [
@@ -85,13 +89,13 @@ end
 ;;a check is needed to make sure the calling turtle isn't partnered.
 
 to form-line ;;turtle procedure
-    ;;set heading (45 * random 8)
-    rt (random-float 90 - random-float 90)
+    set heading (45 * random 8)
+    ;;rt (random-float 90 - random-float 90)
     ifelse any? turtles-on patch-ahead 1
     [ ]
     [ fd 1 ]     ;;move around randomly
 
-
+    ifelse (two-lines?)[
     ifelse (color-t = "red") [
     set partner one-of (turtles-at -1 0) with [ score = 1 and color-t = "red" ]
     ifelse partner != nobody [
@@ -143,12 +147,38 @@ to form-line ;;turtle procedure
       ]
   ]
   ]
+  ]
+  [
+    ifelse (red-h-line?)
+    [
+      let still-moving-turtles turtles with [score = 0 and color-t = "blue"]
+      ask still-moving-turtles [form-h-line]
+    ]
+    [
+      ifelse (red-v-line?)
+      [
+        let still-moving-turtles turtles with [score = 0 and color-t = "blue"]
+        ask still-moving-turtles [form-v-line]
+      ]
+      [
+        ifelse (blue-h-line?)
+        [
+          let still-moving-turtles turtles with [score = 0 and color-t = "red"]
+          ask still-moving-turtles [form-h-line]
+        ]
+        [
+          let still-moving-turtles turtles with [score = 0 and color-t = "red"]
+          ask still-moving-turtles [form-v-line]
+        ]
+      ]
+    ]
+  ]
 end
 
 to form-v-line ;;turtle procedure
-    if (not v-line? or not two-lines?) [
-    ;;set heading (45 * random 8)
-    rt (random-float 90 - random-float 90)
+    if (not two-lines?) [
+    set heading (45 * random 8)
+    ;;rt (random-float 90 - random-float 90)
     ifelse any? turtles-on patch-ahead 1
     [ ]
     [ fd 1 ]     ;;move around randomly
@@ -162,8 +192,8 @@ to form-v-line ;;turtle procedure
         set heading 0
         set score 2
       ]
-        if (v-line?) [ set two-lines? true ]
-      set v-line? true
+        if (red-v-line?) [ set two-lines? true ]
+      set blue-v-line? true
     ][
       set partner one-of (turtles-at 0 -1) with [color-t = "blue"]
       if partner != nobody [
@@ -173,8 +203,8 @@ to form-v-line ;;turtle procedure
           set heading 0
           set score 2
         ]
-          if (v-line?) [ set two-lines? true ]
-        set v-line? true
+          if (red-v-line?) [ set two-lines? true ]
+        set blue-v-line? true
       ]
     ]
     ][
@@ -186,8 +216,8 @@ to form-v-line ;;turtle procedure
         set heading 0
         set score 2
       ]
-        if (v-line?) [ set two-lines? true ]
-      set v-line? true
+        if (blue-v-line?) [ set two-lines? true ]
+      set red-v-line? true
     ][
       set partner one-of (turtles-at 0 -1) with [color-t = "red"]
       if partner != nobody [
@@ -197,8 +227,8 @@ to form-v-line ;;turtle procedure
           set heading 0
           set score 2
         ]
-          if (v-line?) [ set two-lines? true ]
-        set v-line? true
+          if (blue-v-line?) [ set two-lines? true ]
+        set red-v-line? true
       ]
     ]
     ]
@@ -206,9 +236,9 @@ to form-v-line ;;turtle procedure
 end
 
 to form-h-line ;;turtle procedure
-    if (not h-line? or not two-lines?) [
-    ;;set heading (45 * random 8)
-    rt (random-float 90 - random-float 90)
+    if (not two-lines?) [
+    set heading (45 * random 8)
+    ;;rt (random-float 90 - random-float 90)
     ifelse any? turtles-on patch-ahead 1
     [ ]
     [ fd 1 ]     ;;move around randomly
@@ -222,8 +252,8 @@ to form-h-line ;;turtle procedure
         set heading 90
         set score 1
       ]
-        if (h-line?) [ set two-lines? true ]
-      set h-line? true
+        if (red-h-line?) [ set two-lines? true ]
+      set blue-h-line? true
     ][
       set partner one-of (turtles-at 1 0) with [color-t = "blue"]
       if partner != nobody [
@@ -233,8 +263,8 @@ to form-h-line ;;turtle procedure
           set heading 90
           set score 1
         ]
-          if (h-line?) [ set two-lines? true ]
-        set h-line? true
+          if (red-h-line?) [ set two-lines? true ]
+        set blue-h-line? true
       ]
   ]
     ][
@@ -246,8 +276,8 @@ to form-h-line ;;turtle procedure
         set heading 90
         set score 1
       ]
-        if (h-line?) [ set two-lines? true ]
-      set h-line? true
+        if (blue-h-line?) [ set two-lines? true ]
+      set red-h-line? true
     ][
       set partner one-of (turtles-at 1 0) with [color-t = "red"]
       if partner != nobody [
@@ -257,8 +287,8 @@ to form-h-line ;;turtle procedure
           set heading 90
           set score 1
         ]
-          if (h-line?) [ set two-lines? true ]
-        set h-line? true
+          if (blue-h-line?) [ set two-lines? true ]
+        set red-h-line? true
       ]
   ]
   ]]

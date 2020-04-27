@@ -77,8 +77,8 @@ end
 ;;a check is needed to make sure the calling turtle isn't partnered.
 
 to form-line ;;turtle procedure
-    ;;set heading (45 * random 8)
-    rt (random-float 90 - random-float 90)
+    set heading (45 * random 8)
+    ;;rt (random-float 90 - random-float 90)
     ifelse any? turtles-on patch-ahead 1
     [ ]
     [ fd 1 ]     ;;move around randomly
@@ -112,8 +112,8 @@ end
 
 to form-v-line ;;turtle procedure
     if (not v-line?) [
-    ;;set heading (45 * random 8)
-    rt (random-float 90 - random-float 90)
+    set heading (45 * random 8)
+    ;;rt (random-float 90 - random-float 90)
     ifelse any? turtles-on patch-ahead 1
     [ ]
     [ fd 1 ]     ;;move around randomly
@@ -144,8 +144,8 @@ end
 
 to form-h-line ;;turtle procedure
     if (not h-line?) [
-    ;;set heading (45 * random 8)
-    rt (random-float 90 - random-float 90)
+    set heading (45 * random 8)
+    ;;rt (random-float 90 - random-float 90)
     ifelse any? turtles-on patch-ahead 1
     [ ]
     [ fd 1 ]     ;;move around randomly
