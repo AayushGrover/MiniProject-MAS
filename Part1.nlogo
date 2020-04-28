@@ -7,7 +7,8 @@ globals [
 turtles-own [
   score     ;;is 0 if not in a line, 1 if in a h-line & 2 if in a v-line (not to be confused with payoff)
   partner
-
+  in-v-line?
+  in-h-line?
 ]
 
 
@@ -43,6 +44,8 @@ to setup-common-variables
   ask turtles [
     set score 0
     set partner nobody
+    set in-v-line? false
+    set in-h-line? false
     setxy random-xcor random-ycor
   ]
 end
@@ -84,26 +87,54 @@ to form-line ;;turtle procedure
     [ fd 1 ]     ;;move around randomly
 
 
-    set partner one-of (turtles-at -1 0) with [ score = 1 ]
+    set partner one-of (turtles-at -1 0) with [ in-h-line? ]
     ifelse partner != nobody [
       set heading 90
       set score 1
+      set in-h-line? true
+    set ycor ([ycor] of partner)
+    ask partner [
+        set heading 90
+        set score 1
+        set in-h-line? true
+      ]
     ][
-      set partner one-of (turtles-at 1 0) with [ score = 1 ]
+      set partner one-of (turtles-at 1 0) with [ in-h-line? ]
       ifelse partner != nobody [
         set heading 90
         set score 1
+        set in-h-line? true
+      set ycor ([ycor] of partner)
+      ask partner [
+        set heading 90
+        set score 1
+        set in-h-line? true
+      ]
       ]
    [
-   set partner one-of (turtles-at 0 1) with [ score = 2 ]
+   set partner one-of (turtles-at 0 1) with [ in-v-line? ]
         ifelse partner != nobody [
           set heading 0
-          set score 2
+          set score 1
+          set in-v-line? true
+        set xcor ([xcor] of partner)
+        ask partner [
+          set heading 0
+          set score 1
+          set in-v-line? true
+      ]
         ][
-          set partner one-of (turtles-at 0 -1) with [ score = 2 ]
+          set partner one-of (turtles-at 0 -1) with [ in-v-line? ]
           if partner != nobody [
             set heading 0
-            set score 2
+            set score 1
+            set in-v-line? true
+          set xcor ([xcor] of partner)
+          ask partner [
+            set heading 0
+            set score 1
+            set in-v-line? true
+          ]
           ]
         ]
       ]
@@ -121,20 +152,26 @@ to form-v-line ;;turtle procedure
     set partner one-of (turtles-at 0 1)
     ifelse partner != nobody [
       set heading 0
-      set score 2
+      set score 1
+      set in-v-line? true
+      set xcor ([xcor] of partner)
       ask partner [
         set heading 0
-        set score 2
+        set score 1
+        set in-v-line? true
       ]
       set v-line? true
     ][
       set partner one-of (turtles-at 0 -1)
       if partner != nobody [
         set heading 0
-        set score 2
+        set score 1
+        set in-v-line? true
+        set xcor ([xcor] of partner)
         ask partner [
           set heading 0
-          set score 2
+          set score 1
+          set in-v-line? true
         ]
         set v-line? true
       ]
@@ -154,9 +191,12 @@ to form-h-line ;;turtle procedure
     ifelse partner != nobody [
       set score 1
       set heading 90
+      set in-h-line? true
+      set ycor ([ycor] of partner)
       ask partner [
         set heading 90
         set score 1
+        set in-h-line? true
       ]
       set h-line? true
     ][
@@ -164,9 +204,12 @@ to form-h-line ;;turtle procedure
       if partner != nobody [
         set heading 90
         set score 1
+        set in-h-line? true
+        set ycor ([ycor] of partner)
         ask partner [
           set heading 90
           set score 1
+          set in-h-line? true
         ]
         set h-line? true
       ]

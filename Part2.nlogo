@@ -11,7 +11,8 @@ turtles-own [
   score     ;;is 0 if not in a line, 1 if in a h-line & 2 if in a v-line (not to be confused with payoff)
   partner
   color-t
-
+  in-v-line?
+  in-h-line?
 ]
 
 
@@ -50,6 +51,8 @@ to setup-common-variables
   ask turtles [
     set score 0
     set partner nobody
+    set in-h-line? false
+    set in-v-line? false
     setxy random-xcor random-ycor
   ]
 end
@@ -97,51 +100,108 @@ to form-line ;;turtle procedure
 
     ifelse (two-lines?)[
     ifelse (color-t = "red") [
-    set partner one-of (turtles-at -1 0) with [ score = 1 and color-t = "red" ]
+    set partner one-of (turtles-at -1 0) with [ in-h-line? and color-t = "red" ]
     ifelse partner != nobody [
       set heading 90
       set score 1
+      set in-h-line? true
+        ask partner [
+          set heading 90
+          set score 1
+          set in-h-line? true
+        ]
+      set ycor ([ycor] of partner)
     ][
-      set partner one-of (turtles-at 1 0) with [ score = 1 and color-t = "red" ]
+      set partner one-of (turtles-at 1 0) with [ in-h-line? and color-t = "red" ]
       ifelse partner != nobody [
         set heading 90
         set score 1
+        set in-h-line? true
+          ask partner [
+            set heading 90
+            set score 1
+            set in-h-line? true
+        ]
+        set ycor ([ycor] of partner)
       ]
    [
-   set partner one-of (turtles-at 0 1) with [ score = 2 and color-t = "red" ]
+   set partner one-of (turtles-at 0 1) with [ in-v-line? and color-t = "red" ]
         ifelse partner != nobody [
           set heading 0
-          set score 2
+          set score 1
+          set in-v-line? true
+            ask partner [
+              set heading 0
+              set score 1
+              set in-v-line? true
+            ]
+          set xcor ([xcor] of partner)
         ][
-          set partner one-of (turtles-at 0 -1) with [ score = 2 and color-t = "red" ]
+          set partner one-of (turtles-at 0 -1) with [ in-v-line? and color-t = "red" ]
           if partner != nobody [
             set heading 0
-            set score 2
+            set score 1
+            set in-v-line? true
+              ask partner [
+                set heading 0
+                set score 1
+                set in-v-line? true
+              ]
+            set xcor ([xcor] of partner)
           ]
         ]
       ]
   ]
   ][
-    set partner one-of (turtles-at -1 0) with [ score = 1 and color-t = "blue" ]
+    set partner one-of (turtles-at -1 0) with [ in-h-line? and color-t = "blue" ]
     ifelse partner != nobody [
       set heading 90
       set score 1
+      set in-h-line? true
+        ask partner [
+          set heading 90
+          set score 1
+          set in-h-line? true
+        ]
+      set ycor ([ycor] of partner)
     ][
-      set partner one-of (turtles-at 1 0) with [ score = 1 and color-t = "blue" ]
+      set partner one-of (turtles-at 1 0) with [ in-h-line? and color-t = "blue" ]
       ifelse partner != nobody [
         set heading 90
         set score 1
+        set in-h-line? true
+          ask partner [
+            set heading 90
+            set score 1
+            set in-h-line? true
+          ]
+        set ycor ([ycor] of partner)
+
       ]
    [
-   set partner one-of (turtles-at 0 1) with [ score = 2 and color-t = "blue" ]
+   set partner one-of (turtles-at 0 1) with [ in-v-line? and color-t = "blue" ]
         ifelse partner != nobody [
           set heading 0
-          set score 2
+          set score 1
+          set in-v-line? true
+            ask partner [
+              set heading 0
+              set score 1
+              set in-v-line? true
+            ]
+          set xcor ([xcor] of partner)
         ][
-          set partner one-of (turtles-at 0 -1) with [ score = 2 and color-t = "blue" ]
+          set partner one-of (turtles-at 0 -1) with [ in-v-line? and color-t = "blue" ]
           if partner != nobody [
             set heading 0
-            set score 2
+            set score 1
+            set in-v-line? true
+              ask partner [
+                set heading 0
+                set score 1
+                set in-v-line? true
+              ]
+            set xcor ([xcor] of partner)
           ]
         ]
       ]
@@ -187,22 +247,28 @@ to form-v-line ;;turtle procedure
     set partner one-of (turtles-at 0 1) with [color-t = "blue"]
     ifelse partner != nobody [
       set heading 0
-      set score 2
+      set score 1
+      set in-v-line? true
       ask partner [
         set heading 0
-        set score 2
+        set score 1
+        set in-v-line? true
       ]
-        if (red-v-line?) [ set two-lines? true ]
+      set xcor ([xcor] of partner)
+      if (red-v-line?) [ set two-lines? true ]
       set blue-v-line? true
     ][
       set partner one-of (turtles-at 0 -1) with [color-t = "blue"]
       if partner != nobody [
         set heading 0
-        set score 2
+        set score 1
+        set in-v-line? true
         ask partner [
           set heading 0
-          set score 2
+          set score 1
+          set in-v-line? true
         ]
+        set xcor ([xcor] of partner)
           if (red-v-line?) [ set two-lines? true ]
         set blue-v-line? true
       ]
@@ -211,23 +277,29 @@ to form-v-line ;;turtle procedure
       set partner one-of (turtles-at 0 1) with [color-t = "red"]
     ifelse partner != nobody [
       set heading 0
-      set score 2
+      set score 1
+      set in-v-line? true
       ask partner [
         set heading 0
-        set score 2
+        set score 1
+        set in-v-line? true
       ]
-        if (blue-v-line?) [ set two-lines? true ]
+      set xcor ([xcor] of partner)
+      if (blue-v-line?) [ set two-lines? true ]
       set red-v-line? true
     ][
       set partner one-of (turtles-at 0 -1) with [color-t = "red"]
       if partner != nobody [
         set heading 0
-        set score 2
+        set score 1
+        set in-v-line? true
         ask partner [
           set heading 0
-          set score 2
+          set score 1
+          set in-v-line? true
         ]
-          if (blue-v-line?) [ set two-lines? true ]
+        set xcor ([xcor] of partner)
+        if (blue-v-line?) [ set two-lines? true ]
         set red-v-line? true
       ]
     ]
@@ -248,10 +320,13 @@ to form-h-line ;;turtle procedure
     ifelse partner != nobody [
       set score 1
       set heading 90
+      set in-h-line? true
       ask partner [
         set heading 90
         set score 1
+        set in-h-line? true
       ]
+      set ycor ([ycor] of partner)
         if (red-h-line?) [ set two-lines? true ]
       set blue-h-line? true
     ][
@@ -259,10 +334,13 @@ to form-h-line ;;turtle procedure
       if partner != nobody [
         set heading 90
         set score 1
+        set in-h-line? true
         ask partner [
           set heading 90
           set score 1
+          set in-h-line? true
         ]
+        set ycor ([ycor] of partner)
           if (red-h-line?) [ set two-lines? true ]
         set blue-h-line? true
       ]
@@ -272,10 +350,13 @@ to form-h-line ;;turtle procedure
     ifelse partner != nobody [
       set score 1
       set heading 90
+      set in-h-line? true
       ask partner [
         set heading 90
         set score 1
+        set in-h-line? true
       ]
+      set ycor ([ycor] of partner)
         if (blue-h-line?) [ set two-lines? true ]
       set red-h-line? true
     ][
@@ -283,10 +364,13 @@ to form-h-line ;;turtle procedure
       if partner != nobody [
         set heading 90
         set score 1
+        set in-h-line? true
         ask partner [
           set heading 90
           set score 1
+          set in-h-line? true
         ]
+        set ycor ([ycor] of partner)
           if (blue-h-line?) [ set two-lines? true ]
         set red-h-line? true
       ]
