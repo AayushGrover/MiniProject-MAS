@@ -1,5 +1,5 @@
 globals [
-  ;;score of all turtles
+  total-score  ;;score of all turtles
   h-line?
   v-line?
 ]
@@ -21,6 +21,7 @@ to setup
   setup-turtles ;;setup the turtles and distribute them randomly
   set v-line? false
   set h-line? false
+  set total-score 0
   reset-ticks
 end
 
@@ -60,17 +61,18 @@ to go
   ifelse (v-line? and h-line?) [
     ask moving-turtles [ form-line ]
   ][
-    ifelse (v-line?) [
-      ask moving-turtles [ form-h-line ]
+    ifelse (h-line?) [
+      ask moving-turtles [ form-v-line ]
     ][
-      ifelse (h-line?) [
-        ask moving-turtles [ form-v-line ]
+      ifelse (v-line?) [
+        ask moving-turtles [ form-h-line ]
       ][
         ask moving-turtles [ form-v-line ]
         ask moving-turtles [ form-h-line ]
       ]
     ]
   ]
+  do-scoring
   tick
 end
 
@@ -93,6 +95,7 @@ to form-line ;;turtle procedure
       set score 1
       set in-h-line? true
     set ycor ([ycor] of partner)
+    set xcor ([xcor + 1] of partner)
     ask partner [
         set heading 90
         set score 1
@@ -105,6 +108,7 @@ to form-line ;;turtle procedure
         set score 1
         set in-h-line? true
       set ycor ([ycor] of partner)
+      set xcor ([xcor - 1] of partner)
       ask partner [
         set heading 90
         set score 1
@@ -118,6 +122,7 @@ to form-line ;;turtle procedure
           set score 1
           set in-v-line? true
         set xcor ([xcor] of partner)
+      set ycor ([ycor - 1] of partner)
         ask partner [
           set heading 0
           set score 1
@@ -130,6 +135,7 @@ to form-line ;;turtle procedure
             set score 1
             set in-v-line? true
           set xcor ([xcor] of partner)
+          set ycor ([ycor + 1] of partner)
           ask partner [
             set heading 0
             set score 1
@@ -155,6 +161,7 @@ to form-v-line ;;turtle procedure
       set score 1
       set in-v-line? true
       set xcor ([xcor] of partner)
+      set ycor ([ycor - 1] of partner)
       ask partner [
         set heading 0
         set score 1
@@ -168,6 +175,7 @@ to form-v-line ;;turtle procedure
         set score 1
         set in-v-line? true
         set xcor ([xcor] of partner)
+        set ycor ([ycor + 1] of partner)
         ask partner [
           set heading 0
           set score 1
@@ -193,6 +201,7 @@ to form-h-line ;;turtle procedure
       set heading 90
       set in-h-line? true
       set ycor ([ycor] of partner)
+      set xcor ([xcor + 1] of partner)
       ask partner [
         set heading 90
         set score 1
@@ -206,6 +215,7 @@ to form-h-line ;;turtle procedure
         set score 1
         set in-h-line? true
         set ycor ([ycor] of partner)
+        set xcor ([xcor - 1] of partner)
         ask partner [
           set heading 90
           set score 1
@@ -215,6 +225,19 @@ to form-h-line ;;turtle procedure
       ]
     ]
   ]
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;Plotting Procedures;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to do-scoring
+  set total-score  (calc-score)
+end
+
+;; returns the total score
+to-report calc-score
+    report (sum [ score ] of (turtles))
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -277,6 +300,24 @@ NIL
 NIL
 NIL
 1
+
+PLOT
+5
+296
+205
+446
+Score
+Iterations
+Score
+0.0
+10.0
+0.0
+20.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -13345367 true "" "plot total-score"
 
 @#$#@#$#@
 ## WHAT IS IT?

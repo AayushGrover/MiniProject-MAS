@@ -1,5 +1,8 @@
 globals [
   ;;score of all turtles
+  red-score
+  blue-score
+
   blue-h-line?
   red-h-line?
   blue-v-line?
@@ -28,6 +31,8 @@ to setup
   set blue-v-line? false
   set blue-h-line? false
   set two-lines? false
+  set red-score 0
+  set blue-score 0
   reset-ticks
 end
 
@@ -83,6 +88,7 @@ to go
 ;      ]
     ]
   ]
+  get-scores
   tick
 end
 
@@ -111,6 +117,7 @@ to form-line ;;turtle procedure
           set in-h-line? true
         ]
       set ycor ([ycor] of partner)
+      set xcor ([xcor + 1] of partner)
     ][
       set partner one-of (turtles-at 1 0) with [ in-h-line? and color-t = "red" ]
       ifelse partner != nobody [
@@ -123,6 +130,7 @@ to form-line ;;turtle procedure
             set in-h-line? true
         ]
         set ycor ([ycor] of partner)
+        set xcor ([xcor - 1] of partner)
       ]
    [
    set partner one-of (turtles-at 0 1) with [ in-v-line? and color-t = "red" ]
@@ -136,6 +144,7 @@ to form-line ;;turtle procedure
               set in-v-line? true
             ]
           set xcor ([xcor] of partner)
+          set ycor ([ycor - 1] of partner)
         ][
           set partner one-of (turtles-at 0 -1) with [ in-v-line? and color-t = "red" ]
           if partner != nobody [
@@ -148,6 +157,7 @@ to form-line ;;turtle procedure
                 set in-v-line? true
               ]
             set xcor ([xcor] of partner)
+            set ycor ([ycor + 1] of partner)
           ]
         ]
       ]
@@ -164,6 +174,7 @@ to form-line ;;turtle procedure
           set in-h-line? true
         ]
       set ycor ([ycor] of partner)
+      set xcor ([xcor + 1] of partner)
     ][
       set partner one-of (turtles-at 1 0) with [ in-h-line? and color-t = "blue" ]
       ifelse partner != nobody [
@@ -176,6 +187,7 @@ to form-line ;;turtle procedure
             set in-h-line? true
           ]
         set ycor ([ycor] of partner)
+        set xcor ([xcor - 1] of partner)
 
       ]
    [
@@ -190,6 +202,7 @@ to form-line ;;turtle procedure
               set in-v-line? true
             ]
           set xcor ([xcor] of partner)
+          set ycor ([ycor - 1] of partner)
         ][
           set partner one-of (turtles-at 0 -1) with [ in-v-line? and color-t = "blue" ]
           if partner != nobody [
@@ -202,6 +215,7 @@ to form-line ;;turtle procedure
                 set in-v-line? true
               ]
             set xcor ([xcor] of partner)
+            set ycor ([ycor + 1] of partner)
           ]
         ]
       ]
@@ -255,6 +269,7 @@ to form-v-line ;;turtle procedure
         set in-v-line? true
       ]
       set xcor ([xcor] of partner)
+      set ycor ([ycor - 1] of partner)
       if (red-v-line?) [ set two-lines? true ]
       set blue-v-line? true
     ][
@@ -269,6 +284,7 @@ to form-v-line ;;turtle procedure
           set in-v-line? true
         ]
         set xcor ([xcor] of partner)
+        set ycor ([ycor + 1] of partner)
           if (red-v-line?) [ set two-lines? true ]
         set blue-v-line? true
       ]
@@ -285,6 +301,7 @@ to form-v-line ;;turtle procedure
         set in-v-line? true
       ]
       set xcor ([xcor] of partner)
+      set ycor ([ycor - 1] of partner)
       if (blue-v-line?) [ set two-lines? true ]
       set red-v-line? true
     ][
@@ -299,6 +316,7 @@ to form-v-line ;;turtle procedure
           set in-v-line? true
         ]
         set xcor ([xcor] of partner)
+        set ycor ([ycor + 1] of partner)
         if (blue-v-line?) [ set two-lines? true ]
         set red-v-line? true
       ]
@@ -327,6 +345,7 @@ to form-h-line ;;turtle procedure
         set in-h-line? true
       ]
       set ycor ([ycor] of partner)
+      set xcor ([xcor + 1] of partner)
         if (red-h-line?) [ set two-lines? true ]
       set blue-h-line? true
     ][
@@ -341,6 +360,7 @@ to form-h-line ;;turtle procedure
           set in-h-line? true
         ]
         set ycor ([ycor] of partner)
+        set xcor ([xcor - 1] of partner)
           if (red-h-line?) [ set two-lines? true ]
         set blue-h-line? true
       ]
@@ -357,6 +377,7 @@ to form-h-line ;;turtle procedure
         set in-h-line? true
       ]
       set ycor ([ycor] of partner)
+      set xcor ([xcor + 1] of partner)
         if (blue-h-line?) [ set two-lines? true ]
       set red-h-line? true
     ][
@@ -371,11 +392,29 @@ to form-h-line ;;turtle procedure
           set in-h-line? true
         ]
         set ycor ([ycor] of partner)
+        set xcor ([xcor - 1] of partner)
           if (blue-h-line?) [ set two-lines? true ]
         set red-h-line? true
       ]
   ]
   ]]
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;Plotting Procedures;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to get-scores
+  set blue-score (calc-score-blue)
+  set red-score (calc-score-red)
+end
+
+to-report calc-score-blue
+  report (sum [ score ] of (turtles with [color-t = "blue"]))
+end
+
+to-report calc-score-red
+  report (sum [ score ] of (turtles with [color-t = "red"]))
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -438,6 +477,25 @@ NIL
 NIL
 NIL
 1
+
+PLOT
+3
+325
+203
+475
+Scores
+Iterations
+Score
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"Blue" 1.0 0 -13345367 true "" "plot blue-score"
+"Red" 1.0 0 -2674135 true "" "plot red-score"
 
 @#$#@#$#@
 ## WHAT IS IT?
