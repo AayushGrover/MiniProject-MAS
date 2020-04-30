@@ -20,6 +20,7 @@ turtles-own [
   currently-active?
   num-own-partner
   num-partner
+  block-edge
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -47,8 +48,8 @@ end
 
 ;;create the appropriate number of turtles playing each strategy
 to make-turtles
-  create-turtles 13 [ set color red set color-t "red"]
-  create-turtles 12 [ set color blue set color-t "blue"]
+  create-turtles 10 [ set color red set color-t "red"]
+  create-turtles 10 [ set color blue set color-t "blue"]
 end
 
 ;;set the variables that all turtles share
@@ -68,6 +69,7 @@ to setup-common-variables
     set num-own-partner 0 ;; partners having same color
     set need-neighbours? false
     set currently-active? false
+    set block-edge "middle"
     setxy random-xcor random-ycor
   ]
 end
@@ -98,12 +100,61 @@ to form-block ;;turtle procedure
   ifelse any? turtles with [ need-neighbours? ]
   [ partner-up ]
   [
-    let block-turtles turtles with [ in-block? and (num-partner != 8) ]
-    ask block-turtles [ set need-neighbours? true ]
-    ask one-of block-turtles [ set currently-active? true ]
+    show "me fail in form block"
+    update-need-neighbours
   ]
 
+end
 
+to update-need-neighbours
+  ;ask turtles [ show num-partner ]
+  let block-turtles turtles with [ in-block? and (num-partner != 8) ]
+  ;ask block-turtles [ set block-edge "middle" ]
+  ask block-turtles [ update-position ]
+  let random-number (random-float 1)
+  ifelse random-number < 0.25 [
+    let new-active-turtles block-turtles with [ block-edge = "right" ]
+    ask new-active-turtles [ set need-neighbours? true ]
+    ask one-of new-active-turtles [ set currently-active? true ]
+  ][
+    ifelse random-number < 0.5 [
+      let new-active-turtles block-turtles with [ block-edge = "left" ]
+      ask new-active-turtles [ set need-neighbours? true ]
+      ask one-of new-active-turtles [ set currently-active? true ]
+    ][
+      ifelse random-number < 0.75 [
+        let new-active-turtles block-turtles with [ block-edge = "top" ]
+        ask new-active-turtles [ set need-neighbours? true ]
+        ask one-of new-active-turtles [ set currently-active? true ]
+      ][
+        let new-active-turtles block-turtles with [ block-edge = "bottom" ]
+        ask new-active-turtles [ set need-neighbours? true ]
+        ask one-of new-active-turtles [ set currently-active? true ]
+      ]
+    ]
+  ]
+end
+
+to update-position
+  ifelse (partner-s != nobody and (partner-se != nobody or partner-sw != nobody))
+  [
+    set block-edge "top"
+  ][
+    ifelse (partner-e != nobody and (partner-ne != nobody or partner-se != nobody))
+    [
+      set block-edge "left"
+    ][
+      ifelse (partner-n != nobody and (partner-ne != nobody or partner-ne != nobody))
+      [
+        set block-edge "bottom"
+      ][
+        if (partner-w != nobody and (partner-nw != nobody or partner-sw != nobody))
+        [
+          set block-edge "right"
+        ]
+      ]
+    ]
+  ]
 end
 
 to partner-up
@@ -113,16 +164,14 @@ to partner-up
       set need-neighbours? false
       set currently-active? false
 
-      ifelse (any? turtles with [ need-neighbours? ])[
-        let new-active turtles with [ need-neighbours? ]
-        ask one-of new-active [ set currently-active? true ]
-      ]
-      [
-        let block-turtles turtles with [ in-block? and (num-partner != 8) ]
-        ask block-turtles [ set need-neighbours? true ]
-        ask one-of block-turtles [ set currently-active? true ]
-      ]
-
+;      ifelse (any? turtles with [ need-neighbours? ])[
+;        let new-active turtles with [ need-neighbours? ]
+;        ask one-of new-active [ set currently-active? true ]
+;      ]
+;      [
+;        show "me fail in partner up"
+;        update-need-neighbours
+;      ]
    ]
   ]
 
