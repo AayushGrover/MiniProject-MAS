@@ -1,15 +1,24 @@
 globals [
-  ;;score of all turtles
-  total-score
-
-  block-exists?
+  total-score ;;score of all turtles
+  block-exists? ;;does a block exist?
+  block-full? ;;does block have at least one nobody neighbor
 ]
 
 turtles-own [
   score     ;;is 0 if not in a line, 1 if in a h-line & 2 if in a v-line (not to be confused with payoff)
-  partner
+  partner-e
+  partner-ne
+  partner-se
+  partner-w
+  partner-nw
+  partner-sw
+  partner-n
+  partner-s
   color-t
   in-block?
+  num-own-partner
+  has-space?
+  num-partner
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -21,6 +30,7 @@ to setup
   setup-turtles ;;setup the turtles and distribute them randomly
   set block-exists? false
   set total-score 0
+  set block-full? false
   reset-ticks
 end
 
@@ -43,8 +53,18 @@ end
 to setup-common-variables
   ask turtles [
     set score 0
-    set partner nobody
-    set in-block? false
+    set partner-e nobody
+    set partner-ne nobody
+    set partner-se nobody
+    set partner-w nobody
+    set partner-nw nobody
+    set partner-sw nobody
+    set partner-n nobody
+    set partner-s nobody
+    set in-block? false ;; is the turtle part of the block?
+    set num-partner 0 ;; total number of partners
+    set num-own-partner 0 ;; partners having same color
+    set has-space? true ;; if there is a "nobody" neighbor
     setxy random-xcor random-ycor
   ]
 end
@@ -78,129 +98,191 @@ to form-block ;;turtle procedure
       partner-up
     ]
     [
-      block-partner
+      ifelse (block-full?)
+      [
+        block-partner-full
+      ]
+      [
+        ;block-partner
+      ]
     ]
 
   ]
 end
 
 to partner-up
-  set partner one-of (turtles-at -1 0) ;;E
-  ifelse partner != nobody
+  set partner-e one-of (turtles-at -1 0) ;;E
+  ifelse partner-e != nobody
   [
     set heading 0
     set in-block? true
-    set ycor ([ycor] of partner)
-    set xcor ([xcor + 1] of partner)
-    ask partner
+    set ycor ([ycor] of partner-e)
+    set xcor ([xcor + 1] of partner-e)
+    set num-partner (num-partner + 1)
+    if (color-t = ([color-t] of partner-e))
+    [set num-own-partner (num-own-partner + 1)]
+    ask partner-e
     [
+      set partner-w myself
       face myself
       set in-block? true
+      set num-partner (num-partner + 1)
+      if (color-t = ([color-t] of partner-w))
+      [set num-own-partner (num-own-partner + 1)]
     ]
     set block-exists? true
   ]
   [
-   set partner one-of (turtles-at -1 1) ;;NE
-   ifelse partner != nobody
+   set partner-ne one-of (turtles-at -1 1) ;;NE
+   ifelse partner-ne != nobody
     [
       set heading 0
       set in-block? true
-      set ycor ([ycor - 1] of partner)
-      set xcor ([xcor + 1] of partner)
-      ask partner
+      set ycor ([ycor - 1] of partner-ne)
+      set xcor ([xcor + 1] of partner-ne)
+      set num-partner (num-partner + 1)
+      if (color-t = ([color-t] of partner-ne))
+      [set num-own-partner (num-own-partner + 1)]
+      ask partner-ne
       [
+        set partner-sw myself
         face myself
         set in-block? true
+        set num-partner (num-partner + 1)
+        if (color-t = ([color-t] of partner-sw))
+        [set num-own-partner (num-own-partner + 1)]
       ]
       set block-exists? true
     ]
     [
-      set partner one-of (turtles-at -1 -1) ;;SE
-      ifelse partner != nobody
+      set partner-se one-of (turtles-at -1 -1) ;;SE
+      ifelse partner-se != nobody
       [
         set heading 0
         set in-block? true
-        set ycor ([ycor + 1] of partner)
-        set xcor ([xcor + 1] of partner)
-        ask partner
+        set ycor ([ycor + 1] of partner-se)
+        set xcor ([xcor + 1] of partner-se)
+        set num-partner (num-partner + 1)
+        if (color-t = ([color-t] of partner-se))
+        [set num-own-partner (num-own-partner + 1)]
+        ask partner-se
         [
+          set partner-nw myself
           face myself
           set in-block? true
+          set num-partner (num-partner + 1)
+          if (color-t = ([color-t] of partner-nw))
+          [set num-own-partner (num-own-partner + 1)]
         ]
         set block-exists? true
       ]
       [
-        set partner one-of (turtles-at 1 0) ;;W
-        ifelse partner != nobody
+        set partner-w one-of (turtles-at 1 0) ;;W
+        ifelse partner-w != nobody
         [
           set heading 0
           set in-block? true
-          set ycor ([ycor] of partner)
-          set xcor ([xcor - 1] of partner)
-          ask partner
+          set ycor ([ycor] of partner-w)
+          set xcor ([xcor - 1] of partner-w)
+          set num-partner (num-partner + 1)
+          if (color-t = ([color-t] of partner-w))
+          [set num-own-partner (num-own-partner + 1)]
+          ask partner-w
           [
+            set partner-e myself
             face myself
             set in-block? true
+            set num-partner (num-partner + 1)
+            if (color-t = ([color-t] of partner-e))
+            [set num-own-partner (num-own-partner + 1)]
           ]
           set block-exists? true
         ]
         [
-          set partner one-of (turtles-at 1 1) ;;NW
-          ifelse partner != nobody
+          set partner-nw one-of (turtles-at 1 1) ;;NW
+          ifelse partner-nw != nobody
           [
             set heading 0
             set in-block? true
-            set ycor ([ycor - 1] of partner)
-            set xcor ([xcor - 1] of partner)
-            ask partner
+            set ycor ([ycor - 1] of partner-nw)
+            set xcor ([xcor - 1] of partner-nw)
+            set num-partner (num-partner + 1)
+            if (color-t = ([color-t] of partner-nw))
+            [set num-own-partner (num-own-partner + 1)]
+            ask partner-nw
             [
+              set partner-se myself
               face myself
               set in-block? true
+              set num-partner (num-partner + 1)
+              if (color-t = ([color-t] of partner-se))
+              [set num-own-partner (num-own-partner + 1)]
             ]
             set block-exists? true
           ]
           [
-            set partner one-of (turtles-at 1 -1) ;;SW
-            ifelse partner != nobody
+            set partner-sw one-of (turtles-at 1 -1) ;;SW
+            ifelse partner-sw != nobody
             [
               set heading 0
               set in-block? true
-              set ycor ([ycor + 1] of partner)
-              set xcor ([xcor - 1] of partner)
-              ask partner
+              set ycor ([ycor + 1] of partner-sw)
+              set xcor ([xcor - 1] of partner-sw)
+              set num-partner (num-partner + 1)
+              if (color-t = ([color-t] of partner-sw))
+              [set num-own-partner (num-own-partner + 1)]
+              ask partner-sw
               [
+                set partner-ne myself
                 face myself
                 set in-block? true
+                set num-partner (num-partner + 1)
+                if (color-t = ([color-t] of partner-ne))
+                [set num-own-partner (num-own-partner + 1)]
               ]
               set block-exists? true
             ]
             [
-              set partner one-of (turtles-at 0 1) ;;N
-              ifelse partner != nobody
+              set partner-n one-of (turtles-at 0 1) ;;N
+              ifelse partner-n != nobody
               [
                 set heading 0
                 set in-block? true
-                set ycor ([ycor - 1] of partner)
-                set xcor ([xcor] of partner)
-                ask partner
+                set ycor ([ycor - 1] of partner-n)
+                set xcor ([xcor] of partner-n)
+                set num-partner (num-partner + 1)
+                if (color-t = ([color-t] of partner-n))
+                [set num-own-partner (num-own-partner + 1)]
+                ask partner-n
                 [
+                  set partner-s myself
                   face myself
                   set in-block? true
+                  set num-partner (num-partner + 1)
+                  if (color-t = ([color-t] of partner-s))
+                  [set num-own-partner (num-own-partner + 1)]
                 ]
                 set block-exists? true
               ]
               [
-                set partner one-of (turtles-at 0 -1) ;;S
-                if partner != nobody
+                set partner-s one-of (turtles-at 0 -1) ;;S
+                if partner-s != nobody
                 [
                   set heading 0
                   set in-block? true
-                  set ycor ([ycor + 1] of partner)
-                  set xcor ([xcor] of partner)
-                  ask partner
+                  set ycor ([ycor + 1] of partner-s)
+                  set xcor ([xcor] of partner-s)
+                  set num-partner (num-partner + 1)
+                  if (color-t = ([color-t] of partner-s))
+                  [set num-own-partner (num-own-partner + 1)]
+                  ask partner-s
                   [
+                    set partner-n myself
                     face myself
                     set in-block? true
+                    set num-partner (num-partner + 1)
+                    if (color-t = ([color-t] of partner-n))
+                    [set num-own-partner (num-own-partner + 1)]
                   ]
                   set block-exists? true
                 ]
@@ -213,116 +295,180 @@ to partner-up
   ]
 end
 
-to block-partner
-  set partner one-of (turtles-at -1 0) with [in-block?] ;;E
-  ifelse partner != nobody
+to block-partner-full
+  set partner-e one-of (turtles-at -1 0) with
+  [in-block? and color-t = ([color-t] of myself) and partner-w = nobody] ;;E
+  ifelse partner-e != nobody
   [
     set heading 0
     set in-block? true
-    set ycor ([ycor] of partner)
-    set xcor ([xcor + 1] of partner)
-    ask partner
+    set ycor ([ycor] of partner-e)
+    set xcor ([xcor + 1] of partner-e)
+    set num-partner (num-partner + 1)
+    if (color-t = ([color-t] of partner-e))
+    [set num-own-partner (num-own-partner + 1)]
+    ask partner-e
     [
+      set partner-w myself
       face myself
       set in-block? true
+      set num-partner (num-partner + 1)
+      if (color-t = ([color-t] of partner-w))
+      [set num-own-partner (num-own-partner + 1)
     ]
   ]
   [
-   set partner one-of (turtles-at -1 1) with [in-block?] ;;NE
-   ifelse partner != nobody
+    set partner-ne one-of (turtles-at -1 1)
+    with [in-block? and color-t = ([color-t] of myself) and partner-sw = nobody] ;;NE
+   ifelse partner-ne != nobody
     [
       set heading 0
       set in-block? true
-      set ycor ([ycor - 1] of partner)
-      set xcor ([xcor + 1] of partner)
-      ask partner
+      set ycor ([ycor - 1] of partner-ne)
+      set xcor ([xcor + 1] of partner-ne)
+      set num-partner (num-partner + 1)
+      if (color-t = ([color-t] of partner-ne))
+      [set num-own-partner (num-own-partner + 1)]
+      ask partner-ne
       [
+        set partner-sw myself
         face myself
         set in-block? true
+        set num-partner (num-partner + 1)
+        if (color-t = ([color-t] of partner-sw))
+        [set num-own-partner (num-own-partner + 1)]
       ]
     ]
     [
-      set partner one-of (turtles-at -1 -1) with [in-block?] ;;SE
-      ifelse partner != nobody
+      set partner-se one-of (turtles-at -1 -1)
+      with [in-block? and color-t = ([color-t] of myself) and partner-nw = nobody] ;;SE
+      ifelse partner-se != nobody
       [
         set heading 0
         set in-block? true
-        set ycor ([ycor + 1] of partner)
-        set xcor ([xcor + 1] of partner)
-        ask partner
+        set ycor ([ycor + 1] of partner-se)
+        set xcor ([xcor + 1] of partner-se)
+        set num-partner (num-partner + 1)
+        if (color-t = ([color-t] of partner-se))
+        [set num-own-partner (num-own-partner + 1)]
+        ask partner-se
         [
+          set partner-nw myself
           face myself
           set in-block? true
+          set num-partner (num-partner + 1)
+          if (color-t = ([color-t] of partner-nw))
+          [set num-own-partner (num-own-partner + 1)]
         ]
       ]
       [
-        set partner one-of (turtles-at 1 0) with [in-block?] ;;W
-        ifelse partner != nobody
+        set partner-w one-of (turtles-at 1 0)
+        with [in-block? and color-t = ([color-t] of myself) and partner-e = nobody] ;;W
+        ifelse partner-w != nobody
         [
           set heading 0
           set in-block? true
-          set ycor ([ycor] of partner)
-          set xcor ([xcor - 1] of partner)
-          ask partner
+          set ycor ([ycor] of partner-w)
+          set xcor ([xcor - 1] of partner-w)
+          set num-partner (num-partner + 1)
+          if (color-t = ([color-t] of partner-w))
+          [set num-own-partner (num-own-partner + 1)]
+          ask partner-w
           [
+            set partner-e myself
             face myself
             set in-block? true
+            set num-partner (num-partner + 1)
+            if (color-t = ([color-t] of partner-e))
+            [set num-own-partner (num-own-partner + 1)]
           ]
         ]
         [
-          set partner one-of (turtles-at 1 1) with [in-block?] ;;NW
-          ifelse partner != nobody
+          set partner-nw one-of (turtles-at 1 1)
+          with [in-block? and color-t = ([color-t] of myself) and partner-se = nobody] ;;NW
+          ifelse partner-nw != nobody
           [
             set heading 0
             set in-block? true
-            set ycor ([ycor - 1] of partner)
-            set xcor ([xcor - 1] of partner)
-            ask partner
+            set ycor ([ycor - 1] of partner-nw)
+            set xcor ([xcor - 1] of partner-nw)
+            set num-partner (num-partner + 1)
+            if (color-t = ([color-t] of partner-nw))
+            [set num-own-partner (num-own-partner + 1)]
+            ask partner-nw
             [
+              set partner-se myself
               face myself
               set in-block? true
+              set num-partner (num-partner + 1)
+              if (color-t = ([color-t] of partner-se))
+              [set num-own-partner (num-own-partner + 1)]
             ]
           ]
           [
-            set partner one-of (turtles-at 1 -1) with [in-block?] ;;SW
-            ifelse partner != nobody
+            set partner-sw one-of (turtles-at 1 -1)
+            with [in-block? and color-t = ([color-t] of myself) and partner-ne = nobody] ;;SW
+            ifelse partner-sw != nobody
             [
               set heading 0
               set in-block? true
-              set ycor ([ycor + 1] of partner)
-              set xcor ([xcor - 1] of partner)
-              ask partner
+              set ycor ([ycor + 1] of partner-sw)
+              set xcor ([xcor - 1] of partner-sw)
+              set num-partner (num-partner + 1)
+              if (color-t = ([color-t] of partner-sw))
+              [set num-own-partner (num-own-partner + 1)]
+              ask partner-sw
               [
+                set partner-ne myself
                 face myself
                 set in-block? true
+                set num-partner (num-partner + 1)
+                if (color-t = ([color-t] of partner-ne))
+                [set num-own-partner (num-own-partner + 1)]
               ]
             ]
             [
-              set partner one-of (turtles-at 0 1) with [in-block?] ;;N
-              ifelse partner != nobody
+              set partner-n one-of (turtles-at 0 1)
+              with [in-block? and color-t = ([color-t] of myself) and partner-s = nobody] ;;N
+              ifelse partner-n != nobody
               [
                 set heading 0
                 set in-block? true
-                set ycor ([ycor - 1] of partner)
-                set xcor ([xcor] of partner)
-                ask partner
+                set ycor ([ycor - 1] of partner-n)
+                set xcor ([xcor] of partner-n)
+                set num-partner (num-partner + 1)
+                if (color-t = ([color-t] of partner-n))
+                [set num-own-partner (num-own-partner + 1)]
+                ask partner-n
                 [
+                  set partner-s myself
                   face myself
                   set in-block? true
+                  set num-partner (num-partner + 1)
+                  if (color-t = ([color-t] of partner-s))
+                  [set num-own-partner (num-own-partner + 1)]
                 ]
               ]
               [
-                set partner one-of (turtles-at 0 -1) with [in-block?] ;;S
-                if partner != nobody
+                set partner-s one-of (turtles-at 0 -1)
+                with [in-block? and color-t = ([color-t] of myself) and partner-n = nobody] ;;S
+                if partner-s != nobody
                 [
                   set heading 0
                   set in-block? true
-                  set ycor ([ycor + 1] of partner)
-                  set xcor ([xcor] of partner)
-                  ask partner
+                  set ycor ([ycor + 1] of partner-s)
+                  set xcor ([xcor] of partner-s)
+                  set num-partner (num-partner + 1)
+                  if (color-t = ([color-t] of partner-s))
+                  [set num-own-partner (num-own-partner + 1)]
+                  ask partner-s
                   [
+                    set partner-n myself
                     face myself
                     set in-block? true
+                    set num-partner (num-partner + 1)
+                    if (color-t = ([color-t] of partner-n))
+                    [set num-own-partner (num-own-partner + 1)]
                   ]
                 ]
               ]
