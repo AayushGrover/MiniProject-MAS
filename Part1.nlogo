@@ -122,7 +122,7 @@ to form-line ;;turtle procedure
           set score 1
           set in-v-line? true
         set xcor ([xcor] of partner)
-      set ycor ([ycor - 1] of partner)
+        show xcor
         ask partner [
           set heading 0
           set score 1
@@ -135,7 +135,7 @@ to form-line ;;turtle procedure
             set score 1
             set in-v-line? true
           set xcor ([xcor] of partner)
-          set ycor ([ycor + 1] of partner)
+          show xcor
           ask partner [
             set heading 0
             set score 1
@@ -227,17 +227,13 @@ to form-h-line ;;turtle procedure
   ]
 end
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;Plotting Procedures;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-to do-scoring
-  set total-score  (calc-score)
-end
-
-;; returns the total score
-to-report calc-score
-    report (sum [ score ] of (turtles))
+to check
+  let h-turtles turtles with [ in-h-line? ]
+  ask h-turtles[
+    show xcor
+    show ycor
+    show " "
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -301,23 +297,22 @@ NIL
 NIL
 1
 
-PLOT
-5
-296
-205
-446
-Score
-Iterations
-Score
-0.0
-10.0
-0.0
-20.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -13345367 true "" "plot total-score"
+BUTTON
+63
+204
+137
+237
+NIL
+check
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
