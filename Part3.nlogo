@@ -573,16 +573,17 @@ There are 10 red turtles and 10 blue turtles in the 100x100 grid. Get the turtle
 
 The turtles move around randomly (in one of the 8 possible directions). They make sure that they only take one step forward if there is no turtle in that position. The moving turtles have a score of 0.
 
-We have two types of turtles -- active and non-active. Active turtles are looking for partners whereas non-active turtles are already partners of an active turtle or are moving in search of active partners.Initially, all turtles are non-active.
+We have two types of turtles -- active and non-active. Active turtles are looking for partners whereas non-active turtles are already partners of an active turtle or are moving in search of active partners. Initially, all turtles are non-active.
 
 As soon as a turtle finds another turtle in its immediate 8-neighborhood of the same colour, it partners with it and becomes active. As soon as a turtle find its partner, both the turtle and partner stop moving and get a score of 1 each.
 
 Now, the active turtle will first have 3 partners of its own colour and then fill up the remaining 5 partners can be turtles of any colour on the first-come-first-serve basis. Once this is done, all the partners of central turtle become active and start looking for partners.
 
-A turtle will get a score of one for each partner it has and it will get an extra score of one as soon as it has 3 partners of the same colour as itself. Therefore, a turtle can have a maximum score of 9 (8 from its partner, 1 for satisfying the "3 condition").
+A turtle will get a score of one for each partner it has and it will get an extra score of one as soon as it has 3 partners of the same colour as itself. Therefore, a turtle can have a maximum score of 9 (8 from its partner, 1 for satisfying the "3 or more condition").
 
-Such a method of scoring the turtles ensures that they will always form a block. In this way, all turtles will try to maximize their individual payoffs by becoming member of a block and getting an additional payoff of 1 by satisfying the "3 condition" and hence, showing autonomous behavior. In this case, all turtles are not able to acheive the maximum possible payoff and the outer turtles might not be able to satisfy the "3 condition".
-  
+Such a method of scoring the turtles ensures that they will always form a compact block. Here, we have assumed a compact block to nearly resemble a square, whereas for practical purposes, the emergent structure might or might not be a square. But, the structure at all times will be compact (i.e. no gaps/holes between the structure). In this way, all turtles will try to maximize their individual payoffs by becoming member of a block and getting an additional payoff of 1 by satisfying the "3 or more condition" and hence, showing autonomous behavior. In this case, all turtles are not able to acheive the maximum possible payoff and the outer turtles might not be able to satisfy the "3 or more condition".
+
+In the above approach, the turtles who are roaming freely are only aware of their expected maximum payoff being 8. Hence, their self interest lies in forming a block structure as they might end up filling up all their neighbours which will lead to their maximum payoff. But, there emerges a turtle who is aware of the "3 or more condition" and hence, tries to maximize its payoff accordingly. It starts pairing up with other coloured turtles, only when it has acquired at least 3 neighbours of its own colour. The turtles who join it's neighbourhood then become aware of the fact that their maximum expected payoff is 9. Therefore, once they are a part of the block structure, they enforce the constraints on the turtles meaning to partner up with them. Therefore, the turtles roaming freely adopt a different strategy compared to the turtles who are a part of the block structure.
 
 ## UNDERSTANDING THE INTERFACE
 
@@ -592,11 +593,7 @@ The Scores plot gives the variation of the total score of all the turtles with r
 
 ## THINGS TO NOTICE
 
-It is important to note that as the size of the block increases, so does the value of total scores in our plot. This is in agreement with each turtle trying to get a maximum score and hence, partnering up. Also, if the agents are allowed to run for sufficient number of ticks, we can see that the plot converges to a maximum value.
-
-## EXTENDING THE MODEL
-
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+It is important to note that as the size of the block increases, so does the value of total scores in our plot. This is in agreement with each turtle trying to get a maximum score and hence, partnering up. Also, if the agents are allowed to run for sufficient number of ticks, we can see that the plot converges to a maximum value. It is also interesting to note that we can draw an analogy between the compact structure never being a block, to, why nature does not have wheels.
 
 ## AUTHORS
 

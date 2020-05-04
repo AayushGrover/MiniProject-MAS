@@ -120,7 +120,7 @@ to form-line ;;turtle procedure
           set score 1
           set in-v-line? true
         set xcor ([xcor] of partner)
-        show xcor
+      set ycor ([ycor - 1] of partner)
         ask partner [
           set heading 0
           set score 1
@@ -133,7 +133,7 @@ to form-line ;;turtle procedure
             set score 1
             set in-v-line? true
           set xcor ([xcor] of partner)
-          show xcor
+          set ycor ([ycor + 1] of partner)
           ask partner [
             set heading 0
             set score 1
@@ -225,13 +225,17 @@ to form-h-line ;;turtle procedure
   ]
 end
 
-to check
-  let h-turtles turtles with [ in-h-line? ]
-  ask h-turtles[
-    show xcor
-    show ycor
-    show " "
-  ]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;Plotting Procedures;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to do-scoring
+  set total-score  (calc-score)
+end
+
+;; returns the total score
+to-report calc-score
+    report (sum [ score ] of (turtles))
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -328,7 +332,9 @@ We have two global flags to check if a horizantal or vertical line exists (one f
 Without loss of generality, let's assume that the horizontal line was formed first. Now the turtles can only partner up with other turtles on their immediate left or right if the partner turtle is part of this horizontal line. The turtles can partner up with any other turtles that are seen in immediate top or bottom. 
 
 Once this happens, the turtles can now only partner up with turtles that are already members of the lines. In this way, all turtles will try to maximize their individual payoffs by becoming member of a line and getting a higher payoff of 1 and hence, showing autonomous behavior.
-  
+
+The model proposed above works on the principle that every turtle has its maximum expected payoff as 1 and tries to maximize it. Initially, there emerges a turtle who partners up with another turtle to form a line. Following this, the turtles adopt a strategy to move around randomly until they find a line and subsequently, join the already formed line as it gives them their maximum expected payoff. As soon as the turtles get their maximum expected payoff, they stop moving. 
+
 
 ## UNDERSTANDING THE INTERFACE
 
@@ -342,7 +348,7 @@ It is important to note that as the length of line increases, so does the value 
 
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+We propose another model design for the above task. We assume the maximum expected payoff that a turtle can get at all times is, one more than the length of the current longest line formed in the environment. In this way, the turtles forming smaller lines (smaller sized clusters, in terms of the number of turtles associated with each cluster) have the incentive to join a rather longer line as it gives them a better payoff. This makes the smaller clusters unstable and hence depicts chaotic behaviour which is in compliance with the models found in nature. When we allow the agents to run for sufficient number of ticks, we can imagine them forming only one line. This model can be modified to meet the requirements of the task.
 
 ## AUTHORS
 

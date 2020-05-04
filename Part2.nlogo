@@ -512,6 +512,12 @@ We have five global flags to check if a horizantal or vertical line of a particu
 Without loss of generality, let's assume that the red horizontal line was formed first. Now the red turtles can only partner up with other red turtles on their left or right if the partner turtle is part of this horizontal line. Now, the blue turtles will only get a reward of 1 (each) if they form a horizontal line. The blue turtles can partner up with any other blue turtle that is seen in its immediate right or left. 
 
 Once this happens, the two-lines flag is set true and the turtles can now only partner up with turtles with same colours that are already members of the lines. In this way, all turtles will try to maximize their individual payoffs by becoming member of a line and getting a higher payoff of 1 and hence, showing autonomous behavior.
+
+The model proposed above works on the principle that every turtle has its maximum expected payoff as 1 and tries to maximize it. Initially, there emerges a turtle who partners up with another turtle of the same colour to form a line. Following this, the turtles adopt a strategy to move around randomly until they find a line of their color and subsequently, join the already formed line as it gives them their maximum expected payoff which is 1. As soon as the turtles get their maximum expected payoff, they stop moving. Also, we note here that whichever is the direction chosen by the turtle who initiated the formation of the line, all the turtles have to follow the direction specification.
+
+## A REAL WORLD ANALOGY
+
+The approach proposed above is analogous to the emergence of a school of thought, where the turtle who initiated the formation of the line can be mapped to the proposer of the school of thought. Here, the formation of another line of a different colour but of the same orientation can be mapped to the emergence of variation in the initially proposed school of thought and the initiater turtle of that line being the proposer of the variation. Subsequently, the turtles of similar colour joining the line of their colour can be mapped to followers of a school of thought coming together.
   
 
 ## UNDERSTANDING THE INTERFACE
@@ -526,7 +532,7 @@ It is important to note that as the length of line increases, so does the value 
 
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+We propose another model design for the above task. We assume the maximum expected payoff that a turtle can get at all times is, one more than the length of the current longest line of its own colour formed in the environment. In this way, the turtles forming smaller lines of the same colour have the incentive to join a rather longer line of its colour as it gives them a better payoff. This makes the smaller lines unstable and hence depicts chaotic behaviour which is in compliance with the models found in nature. When we allow the agents to run for sufficient number of ticks, we can imagine them forming only two lines, one of each colour.
 
 ## AUTHORS
 
