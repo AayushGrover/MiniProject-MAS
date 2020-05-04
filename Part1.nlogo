@@ -34,7 +34,7 @@ to setup-turtles
   reset-ticks
 end
 
-;;create the appropriate number of turtles playing each strategy
+;;create the appropriate number of turtles
 to make-turtles
   create-turtles 10 [ set color red ]
   create-turtles 10 [ set color blue ]
@@ -76,9 +76,7 @@ to go
   tick
 end
 
-;;have turtles try to find a partner
-;;Since other turtles that have already executed partner-up may have
-;;caused the turtle executing partner-up to be partnered,
+;;have turtles try to find a partner in line
 ;;a check is needed to make sure the calling turtle isn't partnered.
 
 to form-line ;;turtle procedure
@@ -302,10 +300,10 @@ NIL
 1
 
 PLOT
-5
-296
-205
-446
+723
+89
+1124
+362
 Score
 Iterations
 Score
@@ -320,41 +318,40 @@ PENS
 "default" 1.0 0 -13345367 true "" "plot total-score"
 
 @#$#@#$#@
-## WHAT IS IT?
+## TASK
 
-(a general understanding of what the model is trying to show or explain)
+There are 10 red turtles and 10 blue turtles in the 100x100 grid. Get the turtles to form two lines-- one horizontal and one vertical, anywhere in the space while maintaining their autonomy.
 
-## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+## APPROACH
 
-## HOW TO USE IT
+The turtles move around randomly (in one of the 8 possible directions). They make sure that they only take one step forward if there is no turtle in that position. The moving turtles have a score of 0.
 
-(how to use the model, including a description of each of the items in the Interface tab)
+We have two global flags to check if a horizantal or vertical line exists (one flag for each kind of line). As soon as a turtle finds another turtle in its immediate left or right or top or bottom, it formes a horizontal or vertical line respectively with it and sets the flag of that particular line to be true. As soon as a turtle find its partner, both the turtle and partner stop moving and get a score of 1 each.
+
+Without loss of generality, let's assume that the horizontal line was formed first. Now the turtles can only partner up with other turtles on their immediate left or right if the partner turtle is part of this horizontal line. The turtles can partner up with any other turtles that are seen in immediate top or bottom. 
+
+Once this happens, the turtles can now only partner up with turtles that are already members of the lines. In this way, all turtles will try to maximize their individual payoffs by becoming member of a line and getting a higher payoff of 1 and hence, showing autonomous behavior.
+  
+
+## UNDERSTANDING THE INTERFACE
+
+Click on Setup button first to setup the environment. Once all the turtles are in random places with random directions, press the Go button. This is a forever button and will ensure that turtles are moving and forming lines.
+
+The Score plot gives the variation of the total score of all the turtles with respect to iterations (number of ticks). 
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
-
-## THINGS TO TRY
-
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+It is important to note that as the length of line increases, so does the value of total scores in our plot. This is in agreement with each turtle trying to get a score of 1. Also, if the agents are allowed to run for sufficient number of ticks, we can see that the plot converges to the value of 20 meaning that each turtle has obtained the maximum score of 1.
 
 ## EXTENDING THE MODEL
 
 (suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
 
-## NETLOGO FEATURES
+## AUTHORS
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
-
-## RELATED MODELS
-
-(models in the NetLogo Models Library and elsewhere which are of related interest)
-
-## CREDITS AND REFERENCES
-
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+Swasti Shreya Mishra (IMT2017043)
+Aayush Grover (IMT2016005)
 @#$#@#$#@
 default
 true
