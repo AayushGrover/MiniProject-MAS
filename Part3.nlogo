@@ -1,7 +1,5 @@
 globals [
   total-score ;;score of all turtles
-  block-exists? ;;does a block exist?
-  block-full? ;;does block have at least one nobody neighbor
 ]
 
 turtles-own [
@@ -29,9 +27,7 @@ turtles-own [
 to setup
   clear-all
   setup-turtles ;;setup the turtles and distribute them randomly
-  set block-exists? false
   set total-score 0
-  set block-full? false
   reset-ticks
 end
 
@@ -47,8 +43,8 @@ end
 
 ;;create the appropriate number of turtles playing each strategy
 to make-turtles
-  create-turtles 13 [ set color red set color-t "red"]
-  create-turtles 12 [ set color blue set color-t "blue"]
+  create-turtles 10 [ set color red set color-t "red"]
+  create-turtles 10 [ set color blue set color-t "blue"]
 end
 
 ;;set the variables that all turtles share
@@ -147,7 +143,7 @@ to partner-up
        if (color-t = ([color-t] of partner-w))
        [set num-own-partner (num-own-partner + 1)]
      ]
-     set block-exists? true
+
     ]
   ]
   [
@@ -172,7 +168,7 @@ to partner-up
          if (color-t = ([color-t] of partner-sw))
          [set num-own-partner (num-own-partner + 1)]
        ]
-       set block-exists? true
+
       ]
     ]
     [
@@ -197,7 +193,7 @@ to partner-up
            if (color-t = ([color-t] of partner-nw))
            [set num-own-partner (num-own-partner + 1)]
          ]
-         set block-exists? true
+
         ]
       ]
       [
@@ -222,7 +218,7 @@ to partner-up
              if (color-t = ([color-t] of partner-e))
              [set num-own-partner (num-own-partner + 1)]
            ]
-           set block-exists? true
+
           ]
         ]
         [
@@ -247,7 +243,7 @@ to partner-up
                if (color-t = ([color-t] of partner-se))
                [set num-own-partner (num-own-partner + 1)]
              ]
-             set block-exists? true
+
             ]
           ]
           [
@@ -272,7 +268,7 @@ to partner-up
                  if (color-t = ([color-t] of partner-ne))
                  [set num-own-partner (num-own-partner + 1)]
                ]
-               set block-exists? true
+
               ]
             ]
             [
@@ -297,7 +293,7 @@ to partner-up
                    if (color-t = ([color-t] of partner-s))
                    [set num-own-partner (num-own-partner + 1)]
                  ]
-                 set block-exists? true
+
                 ]
               ]
               [
@@ -322,7 +318,7 @@ to partner-up
                      if (color-t = ([color-t] of partner-n))
                      [set num-own-partner (num-own-partner + 1)]
                    ]
-                   set block-exists? true
+
                   ]
                 ]
               ]
@@ -350,7 +346,6 @@ to partner-up
       if (color-t = ([color-t] of partner-w))
       [set num-own-partner (num-own-partner + 1)]
     ]
-    set block-exists? true
   ]
   set partner-ne one-of (turtles-at -1 1) with [ (not currently-active?) and (in-block?) ] ;;NE
   if partner-ne != nobody
@@ -367,8 +362,7 @@ to partner-up
        if (color-t = ([color-t] of partner-sw))
        [set num-own-partner (num-own-partner + 1)]
      ]
-     set block-exists? true
-   ]
+     ]
    set partner-se one-of (turtles-at -1 -1) with [ (not currently-active?) and (in-block?) ]  ;;SE
    if partner-se != nobody
    [
@@ -384,7 +378,6 @@ to partner-up
        if (color-t = ([color-t] of partner-nw))
        [set num-own-partner (num-own-partner + 1)]
      ]
-     set block-exists? true
    ]
    set partner-w one-of (turtles-at 1 0) with [ (not currently-active?) and (in-block?) ]  ;;W
    if partner-w != nobody
@@ -401,7 +394,6 @@ to partner-up
        if (color-t = ([color-t] of partner-e))
        [set num-own-partner (num-own-partner + 1)]
      ]
-     set block-exists? true
    ]
    set partner-nw one-of (turtles-at 1 1) with [ (not currently-active?) and (in-block?) ] ;;NW
    if partner-nw != nobody
@@ -418,7 +410,6 @@ to partner-up
        if (color-t = ([color-t] of partner-se))
        [set num-own-partner (num-own-partner + 1)]
      ]
-     set block-exists? true
    ]
    set partner-sw one-of (turtles-at 1 -1) with [ (not currently-active?) and (in-block?) ]  ;;SW
    if partner-sw != nobody
@@ -435,7 +426,6 @@ to partner-up
        if (color-t = ([color-t] of partner-ne))
        [set num-own-partner (num-own-partner + 1)]
      ]
-     set block-exists? true
    ]
    set partner-n one-of (turtles-at 0 1) with [ (not currently-active?) and (in-block?) ] ;;N
    if partner-n != nobody
@@ -452,7 +442,6 @@ to partner-up
        if (color-t = ([color-t] of partner-s))
        [set num-own-partner (num-own-partner + 1)]
      ]
-     set block-exists? true
    ]
    set partner-s one-of (turtles-at 0 -1) with [ (not currently-active?) and (in-block?) ] ;;S
    if partner-s != nobody
@@ -469,7 +458,6 @@ to partner-up
        if (color-t = ([color-t] of partner-n))
        [set num-own-partner (num-own-partner + 1)]
      ]
-     set block-exists? true
    ]
   ]
 end
@@ -576,41 +564,44 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot total-score"
 
 @#$#@#$#@
-## WHAT IS IT?
+## TASK
 
-(a general understanding of what the model is trying to show or explain)
+There are 10 red turtles and 10 blue turtles in the 100x100 grid. Get the turtles to form a compact block, such that each turtle has at least three other turtles of the same colour as them, in their immediate neighbourhood while maintaining their autonomy.
 
-## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+## APPROACH
 
-## HOW TO USE IT
+The turtles move around randomly (in one of the 8 possible directions). They make sure that they only take one step forward if there is no turtle in that position. The moving turtles have a score of 0.
 
-(how to use the model, including a description of each of the items in the Interface tab)
+We have two types of turtles -- active and non-active. Active turtles are looking for partners whereas non-active turtles are already partners of an active turtle or are moving in search of active partners.Initially, all turtles are non-active.
+
+As soon as a turtle finds another turtle in its immediate 8-neighborhood of the same colour, it partners with it and becomes active. As soon as a turtle find its partner, both the turtle and partner stop moving and get a score of 1 each.
+
+Now, the active turtle will first have 3 partners of its own colour and then fill up the remaining 5 partners can be turtles of any colour on the first-come-first-serve basis. Once this is done, all the partners of central turtle become active and start looking for partners.
+
+A turtle will get a score of one for each partner it has and it will get an extra score of one as soon as it has 3 partners of the same colour as itself. Therefore, a turtle can have a maximum score of 9 (8 from its partner, 1 for satisfying the "3 condition").
+
+Such a method of scoring the turtles ensures that they will always form a block. In this way, all turtles will try to maximize their individual payoffs by becoming member of a block and getting an additional payoff of 1 by satisfying the "3 condition" and hence, showing autonomous behavior. In this case, all turtles are not able to acheive the maximum possible payoff and the outer turtles might not be able to satisfy the "3 condition".
+  
+
+## UNDERSTANDING THE INTERFACE
+
+Click on Setup button first to setup the environment. Once all the turtles are in random places with random directions, press the Go button. This is a forever button and will ensure that turtles are moving and forming a block.
+
+The Scores plot gives the variation of the total score of all the turtles with respect to iterations (number of ticks). 
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
-
-## THINGS TO TRY
-
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+It is important to note that as the size of the block increases, so does the value of total scores in our plot. This is in agreement with each turtle trying to get a maximum score and hence, partnering up. Also, if the agents are allowed to run for sufficient number of ticks, we can see that the plot converges to a maximum value.
 
 ## EXTENDING THE MODEL
 
 (suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
 
-## NETLOGO FEATURES
+## AUTHORS
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
-
-## RELATED MODELS
-
-(models in the NetLogo Models Library and elsewhere which are of related interest)
-
-## CREDITS AND REFERENCES
-
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+Swasti Shreya Mishra (IMT2017043)
+Aayush Grover (IMT2016005)
 @#$#@#$#@
 default
 true

@@ -479,10 +479,10 @@ NIL
 1
 
 PLOT
-3
-325
-203
-475
+712
+115
+1128
+395
 Scores
 Iterations
 Score
@@ -498,41 +498,40 @@ PENS
 "Red" 1.0 0 -2674135 true "" "plot red-score"
 
 @#$#@#$#@
-## WHAT IS IT?
+## TASK
 
-(a general understanding of what the model is trying to show or explain)
+There are 10 red turtles and 10 blue turtles in the 100x100 grid. Get the turtles to form either two vertical lines or two horizontal lines, where each line comprises of agents of the same colour while maintaining their autonomy.
 
-## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+## APPROACH
 
-## HOW TO USE IT
+The turtles move around randomly (in one of the 8 possible directions). They make sure that they only take one step forward if there is no turtle in that position. The moving turtles have a score of 0.
 
-(how to use the model, including a description of each of the items in the Interface tab)
+We have five global flags to check if a horizantal or vertical line of a particular color exists (one flag for each kind of line) and one flag to know if two lines exist or no. As soon as a turtle finds another turtle (of the same colour) in its immediate left or right or top or bottom, it formes a horizontal or vertical line respectively with it and sets the flag of that particular line to be true. As soon as a turtle find its partner, both the turtle and partner stop moving and get a score of 1 each.
+
+Without loss of generality, let's assume that the red horizontal line was formed first. Now the red turtles can only partner up with other red turtles on their left or right if the partner turtle is part of this horizontal line. Now, the blue turtles will only get a reward of 1 (each) if they form a horizontal line. The blue turtles can partner up with any other blue turtle that is seen in its immediate right or left. 
+
+Once this happens, the two-lines flag is set true and the turtles can now only partner up with turtles with same colours that are already members of the lines. In this way, all turtles will try to maximize their individual payoffs by becoming member of a line and getting a higher payoff of 1 and hence, showing autonomous behavior.
+  
+
+## UNDERSTANDING THE INTERFACE
+
+Click on Setup button first to setup the environment. Once all the turtles are in random places with random directions, press the Go button. This is a forever button and will ensure that turtles are moving and forming lines.
+
+The Score plot gives the variation of the total score of all the turtles of a particular color with respect to iterations (number of ticks). 
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
-
-## THINGS TO TRY
-
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+It is important to note that as the length of line increases, so does the value of total scores in our plot. This is in agreement with each turtle trying to get a score of 1. Also, if the agents are allowed to run for sufficient number of ticks, we can see that the plot converges to the value of 10 meaning that each turtle has obtained the maximum score of 1 by being a member of a line of its colour.
 
 ## EXTENDING THE MODEL
 
 (suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
 
-## NETLOGO FEATURES
+## AUTHORS
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
-
-## RELATED MODELS
-
-(models in the NetLogo Models Library and elsewhere which are of related interest)
-
-## CREDITS AND REFERENCES
-
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+Swasti Shreya Mishra (IMT2017043)
+Aayush Grover (IMT2016005)
 @#$#@#$#@
 default
 true
